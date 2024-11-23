@@ -42,7 +42,7 @@ public class speedTool {
 
     private static void handle(List<Speed> speeds) {
         List<SpeedCombine> result = new ArrayList<>();
-        for (int i = 1; i <= speeds.size(); i++) {
+        for (int i = 1; i <= 6; i++) {
             combine(speeds, 0, i, new ArrayList<>(), result);
         }
         result.stream().sorted().forEach(System.out::println);
