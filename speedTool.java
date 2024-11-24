@@ -1,4 +1,4 @@
-package com.ctrip.dcs.price.api;
+package com.ctrip.dcs.intl.shopping.restful.application.command.impl;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -21,28 +21,32 @@ public class speedTool {
     private static Speed 不朽盾弓 = Speed.builder().speed(15).name("不朽盾弓").amount(3000).build();
     private static Speed 界弓 = Speed.builder().speed(30).name("界弓").amount(3400).build();
     private static Speed 海克斯岚切 = Speed.builder().speed(20).name("海克斯岚切").amount(3000).build();
-    private static Speed 狂战士胫甲 = Speed.builder().speed(35).name("狂战士胫甲").amount(1400).build();
+//    private static Speed 狂战士胫甲 = Speed.builder().speed(35).name("狂战士胫甲").amount(1400).build();
 
     /**
      * 稳定的攻速装
      * 其他不稳定的攻速装不列在内：饮血剑、有梦之魂、幻影之舞
+     * 攻速鞋也不在内
+     * 远程攻速装最多可以搭配5件，一件留给鞋子
+     * 近战攻速装最多可以搭配4件，一件留给鞋子，另一件留给心之钢
+     * 排序：攻速降序，装备数量升序、价格降序
      * @param args
      */
     public static void main(String[] args) {
-        List<Speed> close = Arrays.asList(纳什之牙, 破败王者之刃, 三相之力, 智慧末刃, 烈阳魔刃, 不朽盾弓, 界弓, 海克斯岚切, 狂战士胫甲);
-        List<Speed> far = Arrays.asList(纳什之牙, 卢安那的飓风, 强磁电铳, 烈阳魔刃, 不朽盾弓, 界弓, 海克斯岚切, 狂战士胫甲);
+        List<Speed> close = Arrays.asList(纳什之牙, 破败王者之刃, 三相之力, 智慧末刃, 烈阳魔刃, 不朽盾弓, 界弓, 海克斯岚切);
+        List<Speed> far = Arrays.asList(纳什之牙, 卢安那的飓风, 强磁电铳, 烈阳魔刃, 不朽盾弓, 界弓, 海克斯岚切);
 
         System.out.println("-------------------------------close----------------------------------");
-        handle(close);
+        handle(close, 4);
 
         System.out.println();
         System.out.println("-------------------------------far----------------------------------");
-        handle(far);
+        handle(far, 5);
     }
 
-    private static void handle(List<Speed> speeds) {
+    private static void handle(List<Speed> speeds, int max) {
         List<SpeedCombine> result = new ArrayList<>();
-        for (int i = 1; i <= 6; i++) {
+        for (int i = 1; i <= max; i++) {
             combine(speeds, 0, i, new ArrayList<>(), result);
         }
         result.stream().sorted().forEach(System.out::println);
@@ -61,7 +65,7 @@ public class speedTool {
     }
 
     static class SpeedCombine implements Comparable<SpeedCombine> {
-        private List<Speed> speeds = new ArrayList<>();
+        private final List<Speed> speeds;
 
         public SpeedCombine(List<Speed> speeds) {
             this.speeds = speeds;
@@ -77,7 +81,13 @@ public class speedTool {
 
         @Override
         public int compareTo(@NotNull SpeedCombine o) {
-            return o.speedSum() - this.speedSum() == 0 ? o.amountSum() - this.amountSum() : o.speedSum() - this.speedSum();
+            if (speedSum() != o.speedSum()) {
+                return o.speedSum() - speedSum();
+            }
+            if (speeds.size() != o.speeds.size()) {
+                return speeds.size() - o.speeds.size();
+            }
+            return o.amountSum() - amountSum();
         }
 
         public String toString() {
